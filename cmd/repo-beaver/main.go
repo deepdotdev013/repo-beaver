@@ -38,13 +38,13 @@ func main() {
 	errors.HandleError(err, 1)
 
 	// Step 5: Generate the project structure.
-	err = ui.RunSpinner(messages.CreatingProjectStructure, func() error {
+	err = ui.RunSpinner(ui.Success(messages.CreatingProjectStructure), func() error {
 		return gen.Generate(projectName)
 	})
 	errors.HandleError(err, 1)
 
 	// Step 6: Initialize the project with necessary configurations.
-	err = ui.RunSpinner(messages.InitializingProject, func() error {
+	err = ui.RunSpinner(ui.Success(messages.InitializingProject), func() error {
 		return gen.Init(contracts.InitConfig{
 			ProjectName: projectName,
 			ModulePath:  modulePath,
@@ -52,5 +52,5 @@ func main() {
 	})
 	errors.HandleError(err, 1)
 
-	fmt.Println(messages.ProjectGeneratedSuccess)
+	fmt.Println(ui.Success(messages.ProjectGeneratedSuccess))
 }

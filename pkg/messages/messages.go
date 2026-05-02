@@ -17,9 +17,10 @@ const (
 	GoModulePathPrompt            = "Go requires a module path to manage imports and dependencies.\n" +
 		"It is recommended to use a full path (e.g., github.com/username/project-name) " +
 		"to avoid refactoring later when the project is shared or deployed.\n\n" +
-		"Enter Go module path:%s\n" +
-		"(Press Enter to use the default: %s)"
-	EnterProjectNamePrompt string = "Enter a name for your project (this will be used as the folder name):\n%s\n\nPress Enter to continue."
+		"Enter Go module path:"
+	EnterProjectNamePrompt string = "Enter a name for your project (this will be used as the folder name):\n\n"
+	PressEnterToContinue   string = "Press Enter to continue."
+	PressEnterToUseDefault string = "Press Enter to use the default value."
 
 	// Informational Messages
 	GoNotInstalled string = "Go is not installed or not available in PATH.\n\n" +

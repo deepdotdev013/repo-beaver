@@ -85,18 +85,33 @@ func (m BubbleTeaModel) View() string {
 
 	if m.stage == stageProjectNameInput {
 		// Return project name input stage
-		return fmt.Sprintf(
-			messages.EnterProjectNamePrompt,
-			m.projectName,
-		) + "\n"
+		cursor := "_"
+		input := m.projectName
+
+		if input == "" {
+			input = ui.Muted("your-project-name")
+		}
+
+		view := messages.EnterProjectNamePrompt
+		view += ui.Primary("> ") + ui.Bold(input) + ui.Success(cursor) + "\n\n"
+		view += ui.Muted(messages.PressEnterToContinue)
+
+		return view
 	}
 
 	if m.stage == stageGoModulePathInput {
-		return fmt.Sprintf(
-			messages.GoModulePathPrompt,
-			m.modulePath,
-			m.defaultModulePath,
-		) + "\n"
+		cursor := "_"
+		input := m.modulePath
+
+		if input == "" {
+			input = ui.Muted(m.defaultModulePath)
+		}
+
+		view := messages.GoModulePathPrompt
+		view += ui.Primary("> ") + ui.Bold(input) + ui.Success(cursor) + "\n\n"
+		view += ui.Muted(messages.PressEnterToUseDefault)
+
+		return view
 	}
 
 	return ""
@@ -117,11 +132,11 @@ func StartLanguagePrompt() (string, string, string, error) {
 	finalModel := m.(BubbleTeaModel)
 
 	if finalModel.contextCancelled {
-		return "", "", "", fmt.Errorf(messages.ErrPromptCancelled)
+		return "", "", "", fmt.Errorf(ui.Warning(messages.ErrPromptCancelled))
 	}
 
 	if finalModel.projectName == "" {
-		return "", "", "", fmt.Errorf(messages.EmptyProjectName)
+		return "", "", "", fmt.Errorf(ui.Warning(messages.EmptyProjectName))
 	}
 
 	// Return the selected project name and language
