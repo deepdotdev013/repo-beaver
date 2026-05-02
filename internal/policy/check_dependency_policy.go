@@ -5,6 +5,7 @@ import (
 	"os/exec"
 
 	"github.com/deepdotdev013/repo-beaver/pkg/messages"
+	"github.com/deepdotdev013/repo-beaver/pkg/ui"
 )
 
 // RequireCommand checks if a command is available in the system's PATH.
@@ -22,20 +23,20 @@ func CheckLanguageDeps(language string) error {
 	case "go":
 		if err := RequireCommand("go"); err != nil {
 			return fmt.Errorf(
-				messages.GoNotInstalled,
+				ui.Error(messages.GoNotInstalled),
 			)
 		}
 
 	case "node":
 		if err := RequireCommand("node"); err != nil {
 			return fmt.Errorf(
-				messages.NodeNotInstalled,
+				ui.Error(messages.NodeNotInstalled),
 			)
 		}
 
 		if err := RequireCommand("npm"); err != nil {
 			return fmt.Errorf(
-				messages.NpmNotInstalled,
+				ui.Error(messages.NpmNotInstalled),
 			)
 		}
 	}

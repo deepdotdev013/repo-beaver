@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/deepdotdev013/repo-beaver/pkg/messages"
+	"github.com/deepdotdev013/repo-beaver/pkg/ui"
 )
 
 func AvoidDirOverwrite(path string) (bool, error) {
@@ -22,10 +23,10 @@ func AvoidDirOverwrite(path string) (bool, error) {
 
 	// Path exists
 	if !info.IsDir() {
-		return false, fmt.Errorf(messages.PathExistsNotDirectory, path)
+		return false, fmt.Errorf(ui.Error(messages.PathExistsNotDirectory), path)
 	}
 
-	fmt.Printf(messages.OverwritePrompt, path)
+	fmt.Printf(ui.Warning(messages.OverwritePrompt), path)
 
 	// Read user input
 	var response string
