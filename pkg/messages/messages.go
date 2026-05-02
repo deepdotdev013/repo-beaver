@@ -2,7 +2,8 @@ package messages
 
 const (
 	// Success and Warning Messages
-	ProjectGeneratedSuccess  string = "✔ Project generated successfully!\n\nLet’s build something meaningful. Happy coding! :)"
+	ProjectGeneratedSuccess  string = "✔ Project generated successfully!\n"
+	FooterMessage            string = "\nLet’s build something meaningful. Happy coding! :)"
 	ErrPromptCancelled       string = "⚠️ Operation cancelled by user"
 	CreatingProjectStructure string = "Creating project structure"
 	InitializingProject      string = "Initializing project"

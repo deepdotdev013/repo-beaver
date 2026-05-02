@@ -14,7 +14,7 @@ import (
 
 func main() {
 	fmt.Println(ui.Primary("🦫 Repo Beaver"))
-	fmt.Println(ui.Muted("Generate backend projects in seconds.\n"))
+	fmt.Println(ui.White("Generate backend projects in seconds.\n"))
 	// Step 1: Start the project name & language selection prompt.
 	projectName, language, modulePath, err := prompt.StartLanguagePrompt()
 	errors.HandleError(err, 1)
@@ -52,5 +52,5 @@ func main() {
 	})
 	errors.HandleError(err, 1)
 
-	fmt.Println(ui.Success(messages.ProjectGeneratedSuccess))
+	fmt.Println(ui.Success(messages.ProjectGeneratedSuccess) + ui.White(messages.FooterMessage))
 }
