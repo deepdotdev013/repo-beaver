@@ -21,7 +21,7 @@ type GoGenerator struct{}
 func (g *GoGenerator) Generate(cfg contracts.InitConfig) error {
 
 	// Create directories
-	for _, dir := range g.directories(cfg.ProjectName) {
+	for _, dir := range g.directories(cfg.ProjectName, cfg.Framework) {
 		err := os.MkdirAll(filepath.Join(cfg.ProjectName, dir), 0755)
 		if err != nil {
 			return err
@@ -118,19 +118,49 @@ func (g *GoGenerator) Init(cfg contracts.InitConfig) error {
 }
 
 // directories returns the list of directories to be created for the Go project.
-func (g *GoGenerator) directories(projectName string) []string {
-	return []string{
-		filepath.Join("cmd", projectName),
-		"internal/handlers",
-		"internal/services",
-		"internal/repositories",
-		"internal/models",
-		"internal/domains",
-		"internal/core",
-		"pkg/logger",
-		"pkg/utils",
-		"configs",
-		"tests",
-		".github/workflows",
+func (g *GoGenerator) directories(projectName string, framework string) []string {
+	switch framework {
+	case constants.FrameworkGin, constants.FrameworkGorilla:
+		return []string{
+			filepath.Join("cmd", projectName),
+			"internal/handlers",
+			"internal/stores",
+			"internal/routes",
+			"internal/clients",
+			"internal/services",
+			"internal/repositories",
+			"internal/models",
+			"internal/domains",
+			"internal/core",
+			"pkg/logger",
+			"pkg/config",
+			"pkg/middleware",
+			"pkg/security",
+			"pkg/utils",
+			"configs",
+			"infra",
+			"infra/db",
+			"tests",
+			".github/workflows",
+		}
+	case constants.FrameworkNone:
+		return []string{
+			filepath.Join("cmd", projectName),
+			"internal/handlers",
+			"internal/services",
+			"internal/repositories",
+			"internal/models",
+			"pkg/logger",
+			"pkg/config",
+			"pkg/middleware",
+			"pkg/security",
+			"pkg/utils",
+			"configs",
+			"tests",
+			".github/workflows",
+		}
+	default:
+		return []string{}
 	}
+
 }

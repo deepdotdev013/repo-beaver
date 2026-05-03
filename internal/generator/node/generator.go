@@ -22,7 +22,7 @@ type NodeGenerator struct{}
 func (n *NodeGenerator) Generate(cfg contracts.InitConfig) error {
 
 	// Create directories
-	for _, dir := range n.directories() {
+	for _, dir := range n.directories(cfg.Framework) {
 		err := os.MkdirAll(filepath.Join(cfg.ProjectName, dir), 0755)
 		if err != nil {
 			return err
@@ -117,21 +117,60 @@ func (g *NodeGenerator) Init(cfg contracts.InitConfig) error {
 }
 
 // directories returns the list of directories to be created for the Node.js project.
-func (n *NodeGenerator) directories() []string {
-	return []string{
-		"src",
-		"src/models",
-		"src/controllers",
-		"src/services",
-		"src/repositories",
-		"src/routes",
-		"src/middlewares",
-		"src/utils",
-		"src/policies",
-		"src/validators",
-		"configs",
-		"tests",
-		".github/workflows",
+func (n *NodeGenerator) directories(framework string) []string {
+	switch framework {
+	case constants.FrameworkExpress:
+		return []string{
+			"src",
+			"src/models",
+			"src/controllers",
+			"src/services",
+			"src/repositories",
+			"src/routes",
+			"src/middlewares",
+			"src/utils",
+			"src/policies",
+			"src/validators",
+			"configs",
+			"tests",
+			".github/workflows",
+		}
+	case constants.FrameworkFastify:
+		return []string{
+			"src",
+			"client",
+			"db",
+			"db/migrations",
+			"db/seeds",
+			"doc",
+			"scripts",
+			"src/plugins",
+			"src/controllers",
+			"src/services",
+			"src/repositories",
+			"src/routes",
+			"src/schemas",
+			"src/config",
+			"src/modules",
+			"src/utils",
+			"configs",
+			"tests",
+			".github/workflows",
+		}
+	case constants.FrameworkNone:
+		return []string{
+			"src",
+			"src/controllers",
+			"src/services",
+			"src/repositories",
+			"src/models",
+			"src/utils",
+			"configs",
+			"tests",
+			".github/workflows",
+		}
+	default:
+		return []string{}
 	}
 }
 
