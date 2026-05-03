@@ -9,11 +9,18 @@ import (
 )
 
 // initialModel initializes the Language prompt model.
-func initialModel() BubbleTeaModel {
-	return BubbleTeaModel{
+func initialModel(projectName string) BubbleTeaModel {
+	m := BubbleTeaModel{
 		choices: []string{"go", "node"},
 		stage:   stageLanguageSelection,
 	}
+
+	// If projectName is non-empty the project name stage is skipped.
+	if projectName != "" {
+		m.projectName = projectName
+		m.skipProjectName = true
+	}
+	return m
 }
 
 // Init is the initial command for the model prompt.
@@ -156,9 +163,10 @@ func (m BubbleTeaModel) View() string {
 }
 
 // StartLanguagePrompt initiates the Bubble tea TUI and returns the selected project name and language.
-func StartLanguagePrompt() (string, string, string, string, error) {
+func StartLanguagePrompt(projectName string) (string, string, string, string, error) {
 	// Create a new Bubble tea program with the initial model
-	program := tea.NewProgram(initialModel())
+	// If projectName is non-empty it is pre-filled and the name input stage is skipped.
+	program := tea.NewProgram(initialModel(projectName))
 
 	// Start the program and wait for it to finish
 	m, err := program.Run()

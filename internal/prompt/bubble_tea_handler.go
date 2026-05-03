@@ -20,18 +20,19 @@ const (
 
 // BubbleTeaModel represents the state of the language selection prompt.
 type BubbleTeaModel struct {
-	cursor            int
+	cursor            int      // tracks the current cursor position in the choices list
 	choices           []string // go, node
-	projectName       string
-	modulePath        string
-	defaultModulePath string
-	stage             int // Stages from the constants above
-	done              bool
-	contextCancelled  bool // indicates if the user context was cancelled
-	frameworkCursor   int
+	projectName       string   // user input for project name
+	modulePath        string   // user input for Go module path
+	defaultModulePath string   // default Go module path (same as project name) shown in muted text when modulePath is empty
+	stage             int      // Stages from the constants above
+	done              bool     // indicates if the prompt flow is completed and the program should exit
+	contextCancelled  bool     // indicates if the user context was cancelled
+	frameworkCursor   int      // tracks the current cursor position in the frameworks list
 	frameworks        []contracts.FrameworkOption
-	selectedFramework string
+	selectedFramework string // the framework selected by the user (empty if none or not applicable)
 	inputError        string // inline validation error shown below the input
+	skipProjectName   bool   // true when project name was supplied via CLI arg
 }
 
 // --- Handler Functions ---
@@ -49,6 +50,22 @@ func HandleSelectCase(m BubbleTeaModel) (tea.Model, tea.Cmd) {
 
 	// Language selection stage
 	case stageLanguageSelection:
+		// If project name was supplied via CLI arg, jump straight to module path
+		// (Go) or framework selection (Node) — skipping the name input stage.
+		if m.skipProjectName {
+			if m.choices[m.cursor] == constants.LanguageGo {
+				m.frameworks = contracts.Frameworks[constants.LanguageGo]
+				m.defaultModulePath = m.projectName
+				m.modulePath = ""
+				m.stage = stageGoModulePathInput
+				return m, nil
+			}
+			if m.choices[m.cursor] == constants.LanguageNode {
+				m.frameworks = contracts.Frameworks[constants.LanguageNode]
+				m.stage = stageFrameworkSelection
+				return m, nil
+			}
+		}
 		m.stage = stageProjectNameInput
 		return m, nil
 

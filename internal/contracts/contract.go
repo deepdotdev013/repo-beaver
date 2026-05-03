@@ -7,6 +7,7 @@ type InitConfig struct {
 	ProjectName string
 	ModulePath  string
 	Framework   string
+	Language    string
 }
 
 // FileTemplate represents a template for a file that can be generated during project initialization.
