@@ -1,18 +1,25 @@
 const express = require("express");
-
 const app = express();
+
+const PORT = process.env.PORT || 3000;
+
 
 // Middleware
 app.use(express.json());
 
 // Health check route
 app.get("/health", (req, res) => {
-  res.send("🚀 {{ .ProjectName }} is running!");
+  res.json({
+    status: "ok",
+    service: "🚀 {{ .ProjectName }} is running!",
+  });
+});
+
+app.get("/", (req, res) => {
+  res.send("🚀 {{ .ProjectName }} running with Express!");
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });

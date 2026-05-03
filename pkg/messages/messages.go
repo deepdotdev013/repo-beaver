@@ -2,14 +2,20 @@ package messages
 
 const (
 	// Success and Warning Messages
-	ProjectGeneratedSuccess  string = "✔ Project generated successfully!\n"
-	FooterMessage            string = "\nLet’s build something meaningful. Happy coding! :)"
+	ProjectGeneratedSuccess  string = "\n✔ Done in %.2f seconds - Let’s build something meaningful. Happy hacking! :)\n"
 	ErrPromptCancelled       string = "⚠️ Operation cancelled by user"
-	CreatingProjectStructure string = "Creating project structure"
+	CreatingProjectStructure string = "Hi! Scaffolding your backend...\n"
 	InitializingProject      string = "Initializing project"
+	InstallingDependencies   string = "Installing %s framework dependencies"
 
 	// Validation Messages
-	EmptyProjectName string = "⚠️ Project name cannot be empty"
+	EmptyProjectName          string = "⚠️ Project name cannot be empty"
+	ProjectNameHint           string = "Allowed: lowercase letters, digits, hyphens (-), underscores (_). Must start with a letter."
+	ProjectNameLowerCase      string = "Project name must start with a lowercase letter"
+	ModulePathHint            string = "Allowed: letters, digits, hyphens (-), underscores (_), dots (.), slashes (/). e.g. github.com/username/project"
+	ModulePathEmpty           string = "⚠️ Module path cannot be empty"
+	ConflictingFrameworkFlags string = "conflicting flags: only one framework shortcut flag (--gin, --gorilla, --express, --fastify) may be used at a time"
+	DuplicateFlag             string = "duplicate flag: %s was provided more than once"
 
 	// Prompt Messages
 	SelectBackendLanguage  string = "Select the backend language for your project:\n\n"
@@ -40,6 +46,8 @@ const (
 	NpmNotInstalled string = "npm is not installed or not available in PATH.\n\n" +
 		"npm usually comes bundled with Node.js.\n" +
 		"Try reinstalling Node.js from: https://nodejs.org/\nThen re-run this command."
+
+	SelectFrameworkPrompt string = "Select a framework for your project:\n\n"
 
 	// Filesystem Messages
 	PathExistsNotDirectory string = "Cannot continue: \"%s\" exists but is not a directory."

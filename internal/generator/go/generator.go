@@ -1,47 +1,69 @@
 package generator
 
 import (
+	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 
 	"github.com/deepdotdev013/repo-beaver/internal/contracts"
+	"github.com/deepdotdev013/repo-beaver/pkg/constants"
+	"github.com/deepdotdev013/repo-beaver/pkg/messages"
 	"github.com/deepdotdev013/repo-beaver/pkg/templates"
+	"github.com/deepdotdev013/repo-beaver/pkg/ui"
 )
 
 // Generator implements the Generator interface for Go projects.
 type GoGenerator struct{}
 
 // Generate creates the directory structure and main.go file for a Go project.
-func (g *GoGenerator) Generate(projectName string) error {
+func (g *GoGenerator) Generate(cfg contracts.InitConfig) error {
 
 	// Create directories
-	for _, dir := range g.directories(projectName) {
-		err := os.MkdirAll(filepath.Join(projectName, dir), 0755)
+	for _, dir := range g.directories(cfg.ProjectName, cfg.Framework) {
+		err := os.MkdirAll(filepath.Join(cfg.ProjectName, dir), 0755)
 		if err != nil {
 			return err
 		}
+		ui.LogStep(constants.LogStepCreated, filepath.Join(cfg.ProjectName, dir))
 	}
 
 	// Define template and destination paths
 	files := []contracts.FileTemplate{
 		{
-			Tmpl: "go/main.go.tmpl",
-			Dest: filepath.Join("cmd", projectName, "main.go"),
+			Tmpl: fmt.Sprintf("go/%s/main.go.tmpl", cfg.Framework),
+			Dest: filepath.Join("cmd", cfg.ProjectName, "main.go"),
 		},
 		{
-			Tmpl: "go/README.md.tmpl",
+			Tmpl: fmt.Sprintf("go/%s/README.md.tmpl", cfg.Framework),
 			Dest: "README.md",
 		},
 		{
-			Tmpl: "go/gitignore.tmpl",
+			Tmpl: fmt.Sprintf("go/%s/gitignore.tmpl", cfg.Framework),
 			Dest: ".gitignore",
+		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/workflow.yml.tmpl", cfg.Framework),
+			Dest: ".github/workflows/ci.yml",
+		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/env.example.tmpl", cfg.Framework),
+			Dest: ".env.example",
+		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/env.tmpl", cfg.Framework),
+			Dest: ".env",
+		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/Dockerfile.tmpl", cfg.Framework),
+			Dest: "Dockerfile",
 		},
 	}
 
 	// Render the app.js template
-	return templates.RenderFiles(projectName, files, templates.TemplateData{
-		ProjectName: projectName,
+	return templates.RenderFiles(cfg.ProjectName, files, templates.TemplateData{
+		ProjectName: cfg.ProjectName,
 	})
 
 }
@@ -61,24 +83,84 @@ func (g *GoGenerator) Init(cfg contracts.InitConfig) error {
 	cmd.Stdout = nil
 	cmd.Stderr = nil
 
-	// Run the command and return any error encountered
-	return cmd.Run()
+	// Run the command and handle any error encountered
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	ui.LogStep(constants.LogStepInit, "go.mod")
+
+	// install framework
+	switch cfg.Framework {
+
+	case constants.FrameworkGin:
+		cmd = exec.Command("go", "get", "github.com/gin-gonic/gin")
+
+	case constants.FrameworkGorilla:
+		cmd = exec.Command("go", "get", "github.com/gorilla/mux")
+
+	case constants.FrameworkNone:
+		return nil
+
+	default:
+		return fmt.Errorf("unsupported framework: %s", cfg.Framework)
+	}
+
+	if err := ui.RunSpinner(ui.Primary(fmt.Sprintf(messages.InstallingDependencies, cfg.Framework)), func() error {
+		cmd.Dir = cfg.ProjectName
+		cmd.Stdout = nil
+		cmd.Stderr = io.Discard
+		return cmd.Run()
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // directories returns the list of directories to be created for the Go project.
-func (g *GoGenerator) directories(projectName string) []string {
-	return []string{
-		filepath.Join("cmd", projectName),
-		"internal/handlers",
-		"internal/services",
-		"internal/repositories",
-		"internal/models",
-		"internal/domains",
-		"internal/core",
-
-		"pkg/logger",
-		"pkg/utils",
-
-		"configs",
+func (g *GoGenerator) directories(projectName string, framework string) []string {
+	switch framework {
+	case constants.FrameworkGin, constants.FrameworkGorilla:
+		return []string{
+			filepath.Join("cmd", projectName),
+			"internal/handlers",
+			"internal/stores",
+			"internal/routes",
+			"internal/clients",
+			"internal/services",
+			"internal/repositories",
+			"internal/models",
+			"internal/domains",
+			"internal/core",
+			"pkg/logger",
+			"pkg/config",
+			"pkg/middleware",
+			"pkg/security",
+			"pkg/utils",
+			"configs",
+			"infra",
+			"infra/db",
+			"tests",
+			".github/workflows",
+		}
+	case constants.FrameworkNone:
+		return []string{
+			filepath.Join("cmd", projectName),
+			"internal/handlers",
+			"internal/services",
+			"internal/repositories",
+			"internal/models",
+			"pkg/logger",
+			"pkg/config",
+			"pkg/middleware",
+			"pkg/security",
+			"pkg/utils",
+			"configs",
+			"tests",
+			".github/workflows",
+		}
+	default:
+		return []string{}
 	}
+
 }

@@ -7,6 +7,8 @@ import (
 	"text/template"
 
 	"github.com/deepdotdev013/repo-beaver/internal/contracts"
+	"github.com/deepdotdev013/repo-beaver/pkg/constants"
+	"github.com/deepdotdev013/repo-beaver/pkg/ui"
 )
 
 //go:embed node/* go/*
@@ -43,14 +45,17 @@ func RenderTemplate(tmplPath, destPath string, data TemplateData) error {
 // RenderFiles renders multiple templates to their respective destination paths.
 func RenderFiles(projectName string, files []contracts.FileTemplate, data TemplateData) error {
 	for _, file := range files {
+		fullPath := filepath.Join(projectName, file.Dest)
 		err := RenderTemplate(
 			file.Tmpl,
-			filepath.Join(projectName, file.Dest),
+			fullPath,
 			data,
 		)
 		if err != nil {
 			return err
 		}
+
+		ui.LogStep(constants.LogStepWrite, fullPath)
 	}
 	return nil
 }

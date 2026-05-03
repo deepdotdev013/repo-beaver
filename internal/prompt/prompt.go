@@ -9,11 +9,18 @@ import (
 )
 
 // initialModel initializes the Language prompt model.
-func initialModel() BubbleTeaModel {
-	return BubbleTeaModel{
+func initialModel(projectName string) BubbleTeaModel {
+	m := BubbleTeaModel{
 		choices: []string{"go", "node"},
 		stage:   stageLanguageSelection,
 	}
+
+	// If projectName is non-empty the project name stage is skipped.
+	if projectName != "" {
+		m.projectName = projectName
+		m.skipProjectName = true
+	}
+	return m
 }
 
 // Init is the initial command for the model prompt.
@@ -83,6 +90,7 @@ func (m BubbleTeaModel) View() string {
 		return s + ui.Muted(messages.QuitHint)
 	}
 
+	// Project name input stage
 	if m.stage == stageProjectNameInput {
 		// Return project name input stage
 		cursor := "_"
@@ -94,11 +102,17 @@ func (m BubbleTeaModel) View() string {
 
 		view := messages.EnterProjectNamePrompt
 		view += ui.Primary("> ") + ui.Bold(input) + ui.Success(cursor) + "\n\n"
+		if m.inputError != "" {
+			view += ui.Error("✗ "+m.inputError) + "\n"
+		} else {
+			view += ui.Muted(messages.ProjectNameHint) + "\n"
+		}
 		view += ui.Muted(messages.PressEnterToContinue)
 
 		return view
 	}
 
+	// Go module path input stage
 	if m.stage == stageGoModulePathInput {
 		cursor := "_"
 		input := m.modulePath
@@ -109,36 +123,68 @@ func (m BubbleTeaModel) View() string {
 
 		view := messages.GoModulePathPrompt
 		view += ui.Primary("> ") + ui.Bold(input) + ui.Success(cursor) + "\n\n"
+		if m.inputError != "" {
+			view += ui.Error("✗ "+m.inputError) + "\n"
+		} else {
+			view += ui.Muted(messages.ModulePathHint) + "\n"
+		}
 		view += ui.Muted(messages.PressEnterToUseDefault)
 
 		return view
+	}
+
+	// Framework selection stage
+	if m.stage == stageFrameworkSelection {
+		s := ui.Primary(messages.SelectFrameworkPrompt)
+
+		for i, framework := range m.frameworks {
+			cursor := " "
+			name := framework.Name
+			description := framework.Description
+
+			if m.frameworkCursor == i {
+				cursor = ui.Success("➜")
+				name = ui.Bold(name)
+				description = ui.Bold(description)
+			}
+
+			s += fmt.Sprintf("%s %s (%s)\n",
+				cursor,
+				name,
+				description,
+			)
+		}
+
+		s += ui.Muted(messages.LanguageNavigationHelp)
+		return s
 	}
 
 	return ""
 }
 
 // StartLanguagePrompt initiates the Bubble tea TUI and returns the selected project name and language.
-func StartLanguagePrompt() (string, string, string, error) {
+func StartLanguagePrompt(projectName string) (string, string, string, string, error) {
 	// Create a new Bubble tea program with the initial model
-	program := tea.NewProgram(initialModel())
+	// If projectName is non-empty it is pre-filled and the name input stage is skipped.
+	program := tea.NewProgram(initialModel(projectName))
 
 	// Start the program and wait for it to finish
 	m, err := program.Run()
 	if err != nil {
-		return "", "", "", err
+		return "", "", "", "", err
 	}
 
 	// Type assert the returned model to our model type
 	finalModel := m.(BubbleTeaModel)
 
 	if finalModel.contextCancelled {
-		return "", "", "", fmt.Errorf(ui.Warning(messages.ErrPromptCancelled))
+		return "", "", "", "", fmt.Errorf(ui.Warning(messages.ErrPromptCancelled))
 	}
 
 	if finalModel.projectName == "" {
-		return "", "", "", fmt.Errorf(ui.Warning(messages.EmptyProjectName))
+		return "", "", "", "", fmt.Errorf(ui.Warning(messages.EmptyProjectName))
 	}
 
 	// Return the selected project name and language
-	return finalModel.projectName, finalModel.choices[finalModel.cursor], finalModel.modulePath, nil
+	return finalModel.projectName, finalModel.choices[finalModel.cursor], finalModel.modulePath, finalModel.selectedFramework, nil
 }
