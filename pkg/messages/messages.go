@@ -41,6 +41,8 @@ const (
 		"npm usually comes bundled with Node.js.\n" +
 		"Try reinstalling Node.js from: https://nodejs.org/\nThen re-run this command."
 
+	SelectFrameworkPrompt string = "Select a framework for your project:\n\n"
+
 	// Filesystem Messages
 	PathExistsNotDirectory string = "Cannot continue: \"%s\" exists but is not a directory."
 	OverwritePrompt        string = "Directory \"%s\" already exists.\nOverwriting will delete all existing files.\nDo you want to continue? (y/N): "

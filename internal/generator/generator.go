@@ -6,6 +6,7 @@ import (
 	"github.com/deepdotdev013/repo-beaver/internal/contracts"
 	goGen "github.com/deepdotdev013/repo-beaver/internal/generator/go"
 	nodeGen "github.com/deepdotdev013/repo-beaver/internal/generator/node"
+	"github.com/deepdotdev013/repo-beaver/pkg/constants"
 	"github.com/deepdotdev013/repo-beaver/pkg/messages"
 	"github.com/deepdotdev013/repo-beaver/pkg/ui"
 )
@@ -19,9 +20,9 @@ type Generator interface {
 
 func Get(language string) (Generator, error) {
 	switch language {
-	case "go":
+	case constants.LanguageGo:
 		return &goGen.GoGenerator{}, nil
-	case "node":
+	case constants.LanguageNode:
 		return &nodeGen.NodeGenerator{}, nil
 	default:
 		return nil, fmt.Errorf(ui.Error(messages.UnsupportedLanguageError), language)

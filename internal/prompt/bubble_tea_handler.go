@@ -4,6 +4,8 @@ import (
 	"unicode"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/deepdotdev013/repo-beaver/internal/contracts"
+	"github.com/deepdotdev013/repo-beaver/pkg/constants"
 )
 
 // Define constants for different stages of the prompt
@@ -11,6 +13,7 @@ const (
 	stageLanguageSelection = iota
 	stageProjectNameInput
 	stageGoModulePathInput
+	stageFrameworkSelection
 )
 
 // BubbleTeaModel represents the state of the language selection prompt.
@@ -23,6 +26,9 @@ type BubbleTeaModel struct {
 	stage             int // Stages from the constants above
 	done              bool
 	contextCancelled  bool // indicates if the user context was cancelled
+	frameworkCursor   int
+	frameworks        []contracts.FrameworkOption
+	selectedFramework string
 }
 
 // --- Handler Functions ---
@@ -46,15 +52,22 @@ func HandleSelectCase(m BubbleTeaModel) (tea.Model, tea.Cmd) {
 		// Project name input stage
 	case stageProjectNameInput:
 		// If Go is selected, move to module path input stage
-		if m.choices[m.cursor] == "go" {
+		if m.choices[m.cursor] == constants.LanguageGo {
 			// default module path
+			m.frameworks = contracts.Frameworks[constants.LanguageGo]
 			m.defaultModulePath = m.projectName
 			m.modulePath = ""
 			m.stage = stageGoModulePathInput
 			return m, nil
 		}
+		if m.choices[m.cursor] == constants.LanguageNode {
+			m.frameworks = contracts.Frameworks[constants.LanguageNode]
+			m.stage = stageFrameworkSelection
+			return m, nil
+		}
 
 		// For other languages, mark as done
+		m.stage = stageFrameworkSelection
 		m.done = true
 		return m, tea.Quit
 
@@ -63,6 +76,13 @@ func HandleSelectCase(m BubbleTeaModel) (tea.Model, tea.Cmd) {
 			m.modulePath = m.defaultModulePath
 		}
 
+		m.frameworks = contracts.Frameworks[constants.LanguageGo]
+
+		m.stage = stageFrameworkSelection
+		return m, nil
+
+	case stageFrameworkSelection:
+		m.selectedFramework = m.frameworks[m.frameworkCursor].Value
 		m.done = true
 		return m, tea.Quit
 
@@ -73,6 +93,13 @@ func HandleSelectCase(m BubbleTeaModel) (tea.Model, tea.Cmd) {
 
 // HandleMoveUpCase processes the cursor up action.
 func HandleMoveUpCase(m BubbleTeaModel) BubbleTeaModel {
+	if m.stage == stageFrameworkSelection {
+		if m.frameworkCursor > 0 {
+			m.frameworkCursor--
+		}
+		return m
+	}
+
 	if m.cursor > 0 {
 		m.cursor--
 	}
@@ -81,6 +108,13 @@ func HandleMoveUpCase(m BubbleTeaModel) BubbleTeaModel {
 
 // HandleMoveDownCase processes the cursor down action.
 func HandleMoveDownCase(m BubbleTeaModel) BubbleTeaModel {
+	if m.stage == stageFrameworkSelection {
+		if m.frameworkCursor < len(m.frameworks)-1 {
+			m.frameworkCursor++
+		}
+		return m
+	}
+
 	if m.cursor < len(m.choices)-1 {
 		m.cursor++
 	}

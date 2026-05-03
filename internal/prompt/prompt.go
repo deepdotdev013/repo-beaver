@@ -83,6 +83,7 @@ func (m BubbleTeaModel) View() string {
 		return s + ui.Muted(messages.QuitHint)
 	}
 
+	// Project name input stage
 	if m.stage == stageProjectNameInput {
 		// Return project name input stage
 		cursor := "_"
@@ -99,6 +100,7 @@ func (m BubbleTeaModel) View() string {
 		return view
 	}
 
+	// Go module path input stage
 	if m.stage == stageGoModulePathInput {
 		cursor := "_"
 		input := m.modulePath
@@ -112,6 +114,32 @@ func (m BubbleTeaModel) View() string {
 		view += ui.Muted(messages.PressEnterToUseDefault)
 
 		return view
+	}
+
+	// Framework selection stage
+	if m.stage == stageFrameworkSelection {
+		s := ui.Primary(messages.SelectFrameworkPrompt)
+
+		for i, framework := range m.frameworks {
+			cursor := " "
+			name := framework.Name
+			description := framework.Description
+
+			if m.frameworkCursor == i {
+				cursor = ui.Success("➜")
+				name = ui.Bold(name)
+				description = ui.Bold(description)
+			}
+
+			s += fmt.Sprintf("%s %s (%s)\n",
+				cursor,
+				name,
+				description,
+			)
+		}
+
+		s += ui.Muted(messages.LanguageNavigationHelp)
+		return s
 	}
 
 	return ""
