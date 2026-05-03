@@ -95,6 +95,11 @@ func (m BubbleTeaModel) View() string {
 
 		view := messages.EnterProjectNamePrompt
 		view += ui.Primary("> ") + ui.Bold(input) + ui.Success(cursor) + "\n\n"
+		if m.inputError != "" {
+			view += ui.Error("✗ "+m.inputError) + "\n"
+		} else {
+			view += ui.Muted(messages.ProjectNameHint) + "\n"
+		}
 		view += ui.Muted(messages.PressEnterToContinue)
 
 		return view
@@ -111,6 +116,11 @@ func (m BubbleTeaModel) View() string {
 
 		view := messages.GoModulePathPrompt
 		view += ui.Primary("> ") + ui.Bold(input) + ui.Success(cursor) + "\n\n"
+		if m.inputError != "" {
+			view += ui.Error("✗ "+m.inputError) + "\n"
+		} else {
+			view += ui.Muted(messages.ModulePathHint) + "\n"
+		}
 		view += ui.Muted(messages.PressEnterToUseDefault)
 
 		return view

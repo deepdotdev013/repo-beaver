@@ -1,11 +1,13 @@
 package prompt
 
 import (
+	"fmt"
 	"unicode"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/deepdotdev013/repo-beaver/internal/contracts"
 	"github.com/deepdotdev013/repo-beaver/pkg/constants"
+	"github.com/deepdotdev013/repo-beaver/pkg/messages"
 )
 
 // Define constants for different stages of the prompt
@@ -29,6 +31,7 @@ type BubbleTeaModel struct {
 	frameworkCursor   int
 	frameworks        []contracts.FrameworkOption
 	selectedFramework string
+	inputError        string // inline validation error shown below the input
 }
 
 // --- Handler Functions ---
@@ -49,11 +52,16 @@ func HandleSelectCase(m BubbleTeaModel) (tea.Model, tea.Cmd) {
 		m.stage = stageProjectNameInput
 		return m, nil
 
-		// Project name input stage
+	// Project name input stage
 	case stageProjectNameInput:
+		if err := validateProjectName(m.projectName); err != nil {
+			m.inputError = err.Error()
+			return m, nil
+		}
+		m.inputError = ""
+
 		// If Go is selected, move to module path input stage
 		if m.choices[m.cursor] == constants.LanguageGo {
-			// default module path
 			m.frameworks = contracts.Frameworks[constants.LanguageGo]
 			m.defaultModulePath = m.projectName
 			m.modulePath = ""
@@ -72,12 +80,17 @@ func HandleSelectCase(m BubbleTeaModel) (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 
 	case stageGoModulePathInput:
+		// Use default if empty, otherwise validate what was typed
 		if m.modulePath == "" {
 			m.modulePath = m.defaultModulePath
+		} else {
+			if err := validateModulePath(m.modulePath); err != nil {
+				m.inputError = err.Error()
+				return m, nil
+			}
 		}
-
+		m.inputError = ""
 		m.frameworks = contracts.Frameworks[constants.LanguageGo]
-
 		m.stage = stageFrameworkSelection
 		return m, nil
 
@@ -125,25 +138,88 @@ func HandleMoveDownCase(m BubbleTeaModel) BubbleTeaModel {
 func HandleBackspaceCase(m BubbleTeaModel) BubbleTeaModel {
 	if m.stage == stageProjectNameInput && len(m.projectName) > 0 {
 		m.projectName = m.projectName[:len(m.projectName)-1]
+		m.inputError = ""
 	}
 
 	if m.stage == stageGoModulePathInput && len(m.modulePath) > 0 {
 		m.modulePath = m.modulePath[:len(m.modulePath)-1]
+		m.inputError = ""
 	}
 	return m
 }
 
 // HandleDefaultCase processes default character input.
+// Only characters valid for the current field are accepted; invalid ones are silently dropped.
 func HandleDefaultCase(m BubbleTeaModel, msg tea.KeyMsg) BubbleTeaModel {
-	// Here, we only accept printable characters for the project name
-	if len(msg.Runes) == 1 && unicode.IsPrint(msg.Runes[0]) {
-		if m.stage == stageProjectNameInput {
-			m.projectName += string(msg.Runes[0])
-		}
+	if len(msg.Runes) != 1 || !unicode.IsPrint(msg.Runes[0]) {
+		return m
+	}
 
-		if m.stage == stageGoModulePathInput {
-			m.modulePath += string(msg.Runes[0])
+	ch := msg.Runes[0]
+
+	if m.stage == stageProjectNameInput {
+		if isValidProjectNameChar(ch, len(m.projectName)) {
+			m.projectName += string(ch)
+			m.inputError = ""
 		}
 	}
+
+	if m.stage == stageGoModulePathInput {
+		if isValidModulePathChar(ch) {
+			m.modulePath += string(ch)
+			m.inputError = ""
+		}
+	}
+
 	return m
+}
+
+// isValidProjectNameChar returns true if ch is allowed at the given position in a project name.
+func isValidProjectNameChar(ch rune, pos int) bool {
+	if unicode.IsLower(ch) || unicode.IsDigit(ch) {
+		return true
+	}
+	if pos > 0 && (ch == '-' || ch == '_') {
+		return true
+	}
+	return false
+}
+
+// isValidModulePathChar returns true if ch is allowed anywhere in a Go module path.
+func isValidModulePathChar(ch rune) bool {
+	return unicode.IsLetter(ch) || unicode.IsDigit(ch) ||
+		ch == '-' || ch == '_' || ch == '.' || ch == '/'
+}
+
+// validateProjectName checks the full project name string against naming rules.
+func validateProjectName(name string) error {
+	if name == "" {
+		return fmt.Errorf(messages.EmptyProjectName)
+	}
+	runes := []rune(name)
+	if !unicode.IsLower(runes[0]) {
+		return fmt.Errorf(messages.ProjectNameLowerCase)
+	}
+	for _, ch := range runes[1:] {
+		if !unicode.IsLower(ch) && !unicode.IsDigit(ch) && ch != '-' && ch != '_' {
+			return fmt.Errorf(messages.ProjectNameHint)
+		}
+	}
+	return nil
+}
+
+// validateModulePath checks the full Go module path string.
+func validateModulePath(path string) error {
+	if path == "" {
+		return fmt.Errorf(messages.ModulePathEmpty)
+	}
+	if path[0] == '/' || path[len(path)-1] == '/' {
+		return fmt.Errorf(messages.ModulePathHint)
+	}
+	for _, ch := range path {
+		if !isValidModulePathChar(ch) {
+			return fmt.Errorf(messages.ModulePathHint)
+		}
+	}
+	return nil
 }

@@ -9,7 +9,11 @@ const (
 	InstallingDependencies   string = "Installing %s framework dependencies"
 
 	// Validation Messages
-	EmptyProjectName string = "⚠️ Project name cannot be empty"
+	EmptyProjectName     string = "⚠️ Project name cannot be empty"
+	ProjectNameHint      string = "Allowed: lowercase letters, digits, hyphens (-), underscores (_). Must start with a letter."
+	ProjectNameLowerCase string = "Project name must start with a lowercase letter"
+	ModulePathHint       string = "Allowed: letters, digits, hyphens (-), underscores (_), dots (.), slashes (/). e.g. github.com/username/project"
+	ModulePathEmpty      string = "⚠️ Module path cannot be empty"
 
 	// Prompt Messages
 	SelectBackendLanguage  string = "Select the backend language for your project:\n\n"
