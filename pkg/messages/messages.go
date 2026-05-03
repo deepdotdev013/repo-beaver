@@ -60,9 +60,7 @@ const (
 	UnsupportedLanguageError string = "Unsupported language selected: %s"
 
 	// Next steps shown after project generation
-	NextStepsHeader string = "\n🚀 Get started:\n"
-	NextStepsCd     string = "  cd %s\n"
-	NextStepsRun    string = "  %s\n"
+	NextStepsHeader string = "➜ Try running: "
 )
 
 // NextSteps returns a formatted "get started" message tailored to the language,
@@ -80,6 +78,6 @@ func NextSteps(projectName, language, framework string) string {
 	}
 
 	return NextStepsHeader +
-		"  cd " + projectName + "\n" +
+		"  cd " + projectName + " && " +
 		"  " + runCmd + "\n"
 }
