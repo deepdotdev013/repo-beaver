@@ -1,0 +1,22 @@
+project_name: repo-beaver
+
+builds:
+  - id: repo-beaver
+    main: ./cmd/repo-beaver
+    binary: repo-beaver
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+  
+archives:
+  - format: binary
+    name_template: "{{ .Binary }}-{{ .Os }}-{{ .Arch }}"
+    
+release:
+  github:
+    owner: deepdotdev013
+    name: repo-beaver
