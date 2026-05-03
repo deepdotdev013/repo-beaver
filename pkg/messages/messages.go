@@ -2,8 +2,7 @@ package messages
 
 const (
 	// Success and Warning Messages
-	ProjectGeneratedSuccess  string = "✔ Done in %.2f seconds - happy hacking!\n"
-	FooterMessage            string = "\nLet’s build something meaningful. Happy coding! :)"
+	ProjectGeneratedSuccess  string = "\n✔ Done in %.2f seconds - Let’s build something meaningful. Happy hacking! :)\n"
 	ErrPromptCancelled       string = "⚠️ Operation cancelled by user"
 	CreatingProjectStructure string = "Creating project structure"
 	InitializingProject      string = "Initializing project"

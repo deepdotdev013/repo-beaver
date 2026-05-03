@@ -27,6 +27,7 @@ func (n *NodeGenerator) Generate(cfg contracts.InitConfig) error {
 		if err != nil {
 			return err
 		}
+		ui.LogStep(constants.LogStepCreated, filepath.Join(cfg.ProjectName, dir))
 	}
 
 	files := []contracts.FileTemplate{
@@ -69,7 +70,7 @@ func (g *NodeGenerator) Init(cfg contracts.InitConfig) error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
-
+	ui.LogStep(constants.LogStepInit, "package.json")
 	switch cfg.Framework {
 	case constants.FrameworkExpress:
 		cmd = exec.Command("npm", "install", "express")
@@ -85,7 +86,7 @@ func (g *NodeGenerator) Init(cfg contracts.InitConfig) error {
 	}
 
 	if cfg.Framework != constants.FrameworkNone {
-		if err := ui.RunSpinner(ui.Success(fmt.Sprintf(messages.InstallingDependencies, cfg.Framework)), func() error {
+		if err := ui.RunSpinner(ui.Primary(fmt.Sprintf(messages.InstallingDependencies, cfg.Framework)), func() error {
 			cmd.Dir = cfg.ProjectName
 			cmd.Stdout = nil
 			cmd.Stderr = io.Discard

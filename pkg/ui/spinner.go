@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -59,11 +60,17 @@ func (m SpinnerModel) View() string {
 type DoneMsg struct{}
 
 // RunSpinner runs a spinner with the given message while executing the provided task function.
+// Any LogStep calls made inside task are buffered and printed after the spinner exits,
+// so bubbletea's terminal control does not mangle them.
 func RunSpinner(message string, task func() error) error {
 	model := NewSpinner(message)
 	p := tea.NewProgram(model)
 
-	errChan := make(chan error, 1) // 👈 buffered channel (important)
+	errChan := make(chan error, 1)
+	var logLines []string
+
+	// Redirect LogStep output into a buffer while the spinner is running.
+	logBuffer = &logLines
 
 	go func() {
 		err := task()
@@ -72,9 +79,18 @@ func RunSpinner(message string, task func() error) error {
 	}()
 
 	_, err := p.Run()
+
+	// Restore normal LogStep output before printing buffered lines.
+	logBuffer = nil
+
 	if err != nil {
 		return err
 	}
 
-	return <-errChan
+	taskErr := <-errChan
+
+	// Print all buffered log lines now that the terminal is ours again.
+	fmt.Print(strings.Join(logLines, ""))
+
+	return taskErr
 }

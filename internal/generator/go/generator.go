@@ -26,6 +26,7 @@ func (g *GoGenerator) Generate(cfg contracts.InitConfig) error {
 		if err != nil {
 			return err
 		}
+		ui.LogStep(constants.LogStepCreated, filepath.Join(cfg.ProjectName, dir))
 	}
 
 	// Define template and destination paths
@@ -70,6 +71,7 @@ func (g *GoGenerator) Init(cfg contracts.InitConfig) error {
 	if err := cmd.Run(); err != nil {
 		return err
 	}
+	ui.LogStep(constants.LogStepInit, "go.mod")
 
 	// install framework
 	switch cfg.Framework {
@@ -87,7 +89,7 @@ func (g *GoGenerator) Init(cfg contracts.InitConfig) error {
 		return fmt.Errorf("unsupported framework: %s", cfg.Framework)
 	}
 
-	if err := ui.RunSpinner(ui.Success(fmt.Sprintf(messages.InstallingDependencies, cfg.Framework)), func() error {
+	if err := ui.RunSpinner(ui.Primary(fmt.Sprintf(messages.InstallingDependencies, cfg.Framework)), func() error {
 		cmd.Dir = cfg.ProjectName
 		cmd.Stdout = nil
 		cmd.Stderr = io.Discard
