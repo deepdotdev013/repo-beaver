@@ -2,7 +2,7 @@ project_name: repo-beaver
 
 builds:
   - id: repo-beaver
-    main: ./cmd/repo-beaver
+    main: ./cmd/repo-beaver/main.go
     binary: repo-beaver
     goos:
       - linux
