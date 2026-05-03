@@ -1,11 +1,25 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
+
+var version = "0.1.7"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "repo-beaver",
 	Short: "Generate backend projects in seconds",
+}
+
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the version number",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Repo Beaver version:", version)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

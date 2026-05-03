@@ -126,6 +126,7 @@ func init() {
 	createCmd.Flags().BoolVar(&gorillaMuxFlag, constants.FrameworkGorilla, false, "Gorilla Mux framework")
 
 	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(versionCmd)
 }
 
 // handleFlags processes the command-line flags to determine the language and framework for project generation.
