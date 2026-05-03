@@ -1,6 +1,6 @@
 # {{ .ProjectName }}
 
-🚀 A Node.js backend service generated using Repo Beaver.
+🚀 A Node.js backend service built with Express, generated using Repo Beaver.
 
 ---
 
@@ -12,6 +12,7 @@
 ---
 
 ## 📁 Project Structure
+
 ```bash
 {{ .ProjectName }}/
 ├── src/
@@ -44,14 +45,26 @@ node src/app.js
 
 ### Health Check
 
-```bash
+```
 GET /health
 ```
 
 ### Response:
 
-```bash
-🚀 {{ .ProjectName }} is running!
+```json
+{ "status": "ok", "service": "🚀 {{ .ProjectName }} is running!" }
+```
+
+### Root
+
+```
+GET /
+```
+
+### Response:
+
+```
+🚀 {{ .ProjectName }} running with Express!
 ```
 
 ---
@@ -59,7 +72,8 @@ GET /health
 ## 📌 Notes
 
 - Default port: 3000
-- You can override using environment variables
+- Override the port using the `PORT` environment variable
+- JSON body parsing is enabled via `express.json()` middleware
 
 ---
 

@@ -2,11 +2,12 @@ package messages
 
 const (
 	// Success and Warning Messages
-	ProjectGeneratedSuccess  string = "✔ Project generated successfully!\n"
+	ProjectGeneratedSuccess  string = "✔ Done in %.2f seconds - happy hacking!\n"
 	FooterMessage            string = "\nLet’s build something meaningful. Happy coding! :)"
 	ErrPromptCancelled       string = "⚠️ Operation cancelled by user"
 	CreatingProjectStructure string = "Creating project structure"
 	InitializingProject      string = "Initializing project"
+	InstallingDependencies   string = "Installing %s framework dependencies"
 
 	// Validation Messages
 	EmptyProjectName string = "⚠️ Project name cannot be empty"

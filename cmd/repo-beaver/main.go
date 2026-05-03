@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/deepdotdev013/repo-beaver/internal/contracts"
 	"github.com/deepdotdev013/repo-beaver/internal/generator"
@@ -16,7 +17,7 @@ func main() {
 	fmt.Println(ui.Primary("🦫 Repo Beaver"))
 	fmt.Println(ui.White("Generate backend projects in seconds.\n"))
 	// Step 1: Start the project name & language selection prompt.
-	projectName, language, modulePath, err := prompt.StartLanguagePrompt()
+	projectName, language, modulePath, framework, err := prompt.StartLanguagePrompt()
 	errors.HandleError(err, 1)
 
 	// Step 2: Check for language-specific dependencies.
@@ -37,9 +38,16 @@ func main() {
 	gen, err := generator.Get(language)
 	errors.HandleError(err, 1)
 
+	// Record the start time for performance measurement.
+	start := time.Now()
+
 	// Step 5: Generate the project structure.
 	err = ui.RunSpinner(ui.Success(messages.CreatingProjectStructure), func() error {
-		return gen.Generate(projectName)
+		return gen.Generate(contracts.InitConfig{
+			ProjectName: projectName,
+			ModulePath:  modulePath,
+			Framework:   framework,
+		})
 	})
 	errors.HandleError(err, 1)
 
@@ -48,9 +56,11 @@ func main() {
 		return gen.Init(contracts.InitConfig{
 			ProjectName: projectName,
 			ModulePath:  modulePath,
+			Framework:   framework,
 		})
 	})
 	errors.HandleError(err, 1)
 
-	fmt.Println(ui.Success(messages.ProjectGeneratedSuccess) + ui.White(messages.FooterMessage))
+	duration := time.Since(start)
+	fmt.Println(ui.Success(fmt.Sprintf(messages.ProjectGeneratedSuccess, duration.Seconds())))
 }

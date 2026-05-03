@@ -146,27 +146,27 @@ func (m BubbleTeaModel) View() string {
 }
 
 // StartLanguagePrompt initiates the Bubble tea TUI and returns the selected project name and language.
-func StartLanguagePrompt() (string, string, string, error) {
+func StartLanguagePrompt() (string, string, string, string, error) {
 	// Create a new Bubble tea program with the initial model
 	program := tea.NewProgram(initialModel())
 
 	// Start the program and wait for it to finish
 	m, err := program.Run()
 	if err != nil {
-		return "", "", "", err
+		return "", "", "", "", err
 	}
 
 	// Type assert the returned model to our model type
 	finalModel := m.(BubbleTeaModel)
 
 	if finalModel.contextCancelled {
-		return "", "", "", fmt.Errorf(ui.Warning(messages.ErrPromptCancelled))
+		return "", "", "", "", fmt.Errorf(ui.Warning(messages.ErrPromptCancelled))
 	}
 
 	if finalModel.projectName == "" {
-		return "", "", "", fmt.Errorf(ui.Warning(messages.EmptyProjectName))
+		return "", "", "", "", fmt.Errorf(ui.Warning(messages.EmptyProjectName))
 	}
 
 	// Return the selected project name and language
-	return finalModel.projectName, finalModel.choices[finalModel.cursor], finalModel.modulePath, nil
+	return finalModel.projectName, finalModel.choices[finalModel.cursor], finalModel.modulePath, finalModel.selectedFramework, nil
 }

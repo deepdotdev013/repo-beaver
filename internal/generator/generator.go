@@ -13,7 +13,7 @@ import (
 
 type Generator interface {
 	// Generate creates the project structure and necessary files.
-	Generate(projectName string) error
+	Generate(cfg contracts.InitConfig) error
 	// Init initializes the project with necessary configurations.
 	Init(cfg contracts.InitConfig) error
 }
