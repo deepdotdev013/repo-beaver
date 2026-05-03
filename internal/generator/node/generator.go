@@ -43,6 +43,22 @@ func (n *NodeGenerator) Generate(cfg contracts.InitConfig) error {
 			Tmpl: fmt.Sprintf("node/%s/gitignore.tmpl", cfg.Framework),
 			Dest: ".gitignore",
 		},
+		{
+			Tmpl: fmt.Sprintf("node/%s/workflow.yml.tmpl", cfg.Framework),
+			Dest: ".github/workflows/ci.yml",
+		},
+		{
+			Tmpl: fmt.Sprintf("node/%s/env.example.tmpl", cfg.Framework),
+			Dest: ".env.example",
+		},
+		{
+			Tmpl: fmt.Sprintf("node/%s/env.tmpl", cfg.Framework),
+			Dest: ".env",
+		},
+		{
+			Tmpl: fmt.Sprintf("node/%s/Dockerfile.tmpl", cfg.Framework),
+			Dest: "Dockerfile",
+		},
 	}
 
 	// Render the app.js template
@@ -112,7 +128,10 @@ func (n *NodeGenerator) directories() []string {
 		"src/middlewares",
 		"src/utils",
 		"src/policies",
+		"src/validators",
 		"configs",
+		"tests",
+		".github/workflows",
 	}
 }
 

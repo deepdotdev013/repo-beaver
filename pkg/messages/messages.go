@@ -4,7 +4,7 @@ const (
 	// Success and Warning Messages
 	ProjectGeneratedSuccess  string = "\n✔ Done in %.2f seconds - Let’s build something meaningful. Happy hacking! :)\n"
 	ErrPromptCancelled       string = "⚠️ Operation cancelled by user"
-	CreatingProjectStructure string = "Creating project structure"
+	CreatingProjectStructure string = "Hi! Scaffolding your backend...\n"
 	InitializingProject      string = "Initializing project"
 	InstallingDependencies   string = "Installing %s framework dependencies"
 

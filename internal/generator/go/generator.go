@@ -43,6 +43,22 @@ func (g *GoGenerator) Generate(cfg contracts.InitConfig) error {
 			Tmpl: fmt.Sprintf("go/%s/gitignore.tmpl", cfg.Framework),
 			Dest: ".gitignore",
 		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/workflow.yml.tmpl", cfg.Framework),
+			Dest: ".github/workflows/ci.yml",
+		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/env.example.tmpl", cfg.Framework),
+			Dest: ".env.example",
+		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/env.tmpl", cfg.Framework),
+			Dest: ".env",
+		},
+		{
+			Tmpl: fmt.Sprintf("go/%s/Dockerfile.tmpl", cfg.Framework),
+			Dest: "Dockerfile",
+		},
 	}
 
 	// Render the app.js template
@@ -111,10 +127,10 @@ func (g *GoGenerator) directories(projectName string) []string {
 		"internal/models",
 		"internal/domains",
 		"internal/core",
-
 		"pkg/logger",
 		"pkg/utils",
-
 		"configs",
+		"tests",
+		".github/workflows",
 	}
 }
