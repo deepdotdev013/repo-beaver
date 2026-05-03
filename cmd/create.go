@@ -112,7 +112,7 @@ var createCmd = &cobra.Command{
 
 		duration := time.Since(start)
 		fmt.Println(ui.Success(fmt.Sprintf(messages.ProjectGeneratedSuccess, duration.Seconds())))
-		fmt.Print(ui.Primary(messages.NextSteps(cfg.ProjectName, cfg.Language, cfg.Framework)))
+		fmt.Println(ui.Success(messages.NextSteps(cfg.ProjectName, cfg.Language, cfg.Framework)))
 	},
 }
 
