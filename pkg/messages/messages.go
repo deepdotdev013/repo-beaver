@@ -1,5 +1,7 @@
 package messages
 
+import "github.com/deepdotdev013/repo-beaver/pkg/constants"
+
 const (
 	// Success and Warning Messages
 	ProjectGeneratedSuccess  string = "\n✔ Done in %.2f seconds - Let’s build something meaningful. Happy hacking! :)\n"
@@ -56,4 +58,28 @@ const (
 
 	// Language & Dependency Errors
 	UnsupportedLanguageError string = "Unsupported language selected: %s"
+
+	// Next steps shown after project generation
+	NextStepsHeader string = "\n🚀 Get started:\n"
+	NextStepsCd     string = "  cd %s\n"
+	NextStepsRun    string = "  %s\n"
 )
+
+// NextSteps returns a formatted "get started" message tailored to the language,
+// framework, and project name so the user knows exactly what to run next.
+func NextSteps(projectName, language, framework string) string {
+	var runCmd string
+
+	switch language {
+	case constants.LanguageGo:
+		runCmd = "go run cmd/" + projectName + "/main.go"
+	case constants.LanguageNode:
+		runCmd = "npm start"
+	default:
+		runCmd = "# see README.md for run instructions"
+	}
+
+	return NextStepsHeader +
+		"  cd " + projectName + "\n" +
+		"  " + runCmd + "\n"
+}
