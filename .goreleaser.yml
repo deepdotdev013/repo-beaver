@@ -15,8 +15,7 @@ builds:
 archives:
   - format: tar.gz
     name_template: "{{ .Binary }}-{{ .Os }}-{{ .Arch }}"
-    files:
-      - []
+    files: []
 
     format_overrides:
       - goos: windows
