@@ -14,6 +14,11 @@ builds:
   
 archives:
   - format: tar.gz
+  - format: zip
+    builds:
+      - repo-beaver
+    goos:
+      - windows
     name_template: "{{ .Binary }}-{{ .Os }}-{{ .Arch }}"
     files: []
     
