@@ -15,6 +15,7 @@ builds:
 archives:
   - format: tar.gz
     name_template: "{{ .Binary }}-{{ .Os }}-{{ .Arch }}"
+    files: []
     
 release:
   github:
