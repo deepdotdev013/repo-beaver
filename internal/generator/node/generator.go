@@ -52,10 +52,6 @@ func (n *NodeGenerator) Generate(cfg contracts.InitConfig) error {
 			Dest: ".env.example",
 		},
 		{
-			Tmpl: fmt.Sprintf("node/%s/env.tmpl", cfg.Framework),
-			Dest: ".env",
-		},
-		{
 			Tmpl: fmt.Sprintf("node/%s/Dockerfile.tmpl", cfg.Framework),
 			Dest: "Dockerfile",
 		},

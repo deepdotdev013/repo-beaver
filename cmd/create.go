@@ -118,8 +118,6 @@ var createCmd = &cobra.Command{
 
 // Initialize the create command and add it to the root command
 func init() {
-	createCmd.Flags().StringVar(&langFlag, "lang", "", "Language (go/node)")
-	createCmd.Flags().StringVar(&frameworkFlag, "framework", "", "Framework (gin/gorilla mux/express/fastify)")
 	createCmd.Flags().BoolVar(&expressFlag, constants.FrameworkExpress, false, "Express.js framework")
 	createCmd.Flags().BoolVar(&fastifyFlag, constants.FrameworkFastify, false, "Fastify framework")
 	createCmd.Flags().BoolVar(&ginFlag, constants.FrameworkGin, false, "Gin framework")

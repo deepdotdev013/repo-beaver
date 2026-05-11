@@ -52,10 +52,6 @@ func (g *GoGenerator) Generate(cfg contracts.InitConfig) error {
 			Dest: ".env.example",
 		},
 		{
-			Tmpl: fmt.Sprintf("go/%s/env.tmpl", cfg.Framework),
-			Dest: ".env",
-		},
-		{
 			Tmpl: fmt.Sprintf("go/%s/Dockerfile.tmpl", cfg.Framework),
 			Dest: "Dockerfile",
 		},
