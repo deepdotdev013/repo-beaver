@@ -32,8 +32,16 @@ var (
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create [project-name]",
-	Short: "Create a new backend project",
-	Args:  cobra.MaximumNArgs(1),
+	Short: "Scaffold a backend project instantly",
+	Long: `Repo Beaver generates production-ready backend
+projects with modern frameworks and clean architecture.`,
+	Example: `
+  repo-beaver create my-app --express
+  repo-beaver create my-api --fastify
+  repo-beaver create golang-api --gin
+  repo-beaver create golang-api --gorilla
+`,
+	Args: cobra.MaximumNArgs(1),
 
 	// Reject duplicate flags before any business logic runs.
 	PreRunE: func(cmd *cobra.Command, args []string) error {
